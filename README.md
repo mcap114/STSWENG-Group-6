@@ -14,20 +14,27 @@ This project is a tracking management web application developed for the Las Piñ
 
 # BRANCH STRUCTURE
 - ## Main Branches (All changes must go through a pull request and code review before adding)
-  - **main** <br />
-    *Fully-tested* code that is stable and ready for production <br />
-    **This branch will be used for deployment** <br />
-  - **develop** <br />
-    Latest merged changes still being tested for release
-  - ## Supporting Branches
-  - **feature** <br />
-    Adding new features derived from the `develop` branch, and merged back into it once complete
-  - **release** <br />
-    Created when preparing a new release version, derived from `develop`, merged into `main` and `develop` once complete
-  - **hotfix** <br />
-    Created to fix issues in `main`, merged into `main` and `develop` once complete
+  - ### **main** <br />
+      *Fully-tested* code that is stable and ready for production <br />
+      **This branch will be used for deployment** <br />
+  - ### **develop** <br />
+      Latest merged changes still being tested for release
+- ## Supporting Branches
+  - ### **feature** <br />
+      Adding new features derived from the `develop` branch, and merged back into it once complete <br />
+      **Naming Convention:** <br />
+      `feature/<feature-name>` <br /> <br />
+  - ### **release** <br />
+      Created when preparing a new release version, derived from `develop`, merged into `main` and `develop` once complete<br />
+      **Naming Convention (use *[semantic versioning](https://arter.dev/semantic-versioning-cheat-sheet)):** <br />
+      `release/<version-or-name>>` <br /> <br />
+  - ### **hotfix** <br />
+      Created to fix issues in `main`, merged into `main` and `develop` once complete <br />
+      **Naming Convention:** <br />
+      `hotfix/<issue-name>` <br /> <br />
  
   # MERGING STRATEGY SUMMARY
   Feature branches → merge into `develop`. <br />
   Release branches → created from `develop`, then merged into `main` and `develop`. <br />
   Hotfix branches → merged into both `main` and `develop` after fixing issues <br />
+
