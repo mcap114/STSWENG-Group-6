@@ -365,3 +365,63 @@ function exportTableToCSV(filename) {
     }
     downloadCSV(csv.join('\n'), filename);
 }
+
+document.getElementById('csvFileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            parseAndSendCSVData(content);
+        };
+        reader.readAsText(file);
+    }
+});
+
+function parseAndSendCSVData(csvContent) {
+    const lines = csvContent.split('\n');
+    const peopleData = [];
+
+    // Skip the first line if it contains headers
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+            const fields = line.split(';');
+            const person = {
+                first_name: fields[0],
+                last_name: fields[1],
+                gender: fields[2],
+                birthdate: fields[3],
+                address: fields[4],
+                barangay: fields[5],
+                contact_number: fields[6],
+                disability_type: fields[7],
+                disability: fields[8],
+                pwd_card_id_no: fields[9],
+                recent_pwd_id_update_date: fields[10]
+            };
+            peopleData.push(person);
+            console.log(peopleData);
+        }
+    }
+
+    // Send data to the server
+    fetch('/people/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ people: peopleData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}

@@ -41,7 +41,7 @@ const PersonSchema = new Schema({
             "Almanza Uno", 
             "Daniel Fajardo", 
             "Elias Aldana", 
-            "Ilaya", 
+            "Ilaya",    
             "Manuyo Uno", 
             "Pamplona Uno", 
             "Pulanglupa Uno", 
