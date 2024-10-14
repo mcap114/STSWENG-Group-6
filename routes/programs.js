@@ -148,4 +148,33 @@ router.get('/:id', asyncHandler(async(req, res) => {
     res.send("NOT IMPLEMENTED: Program detail");
 }));
 
+router.post('/import', asyncHandler(async (req, res) => {
+    const { program } = req.body;
+    console.log('Received data:', req.body); //for debugging received data
+
+    if (!program || !Array.isArray(program) || program.length === 0) {
+        return res.status(400).json({ success: false, message: 'Invalid CSV data.' });
+    }
+
+    try {
+        const programToInsert = program.map(program => ({
+            name: program.name,
+            recent_update_date: new Date (program.recent_update_date),     
+            creation_date: new Date(program.creation_date),
+            program_type: program.program_type,
+            frequency: program.frequency,
+            assistance_type: program.assistance_type,
+        }));
+        console.log('Program to insert:', programToInsert); // Log the data before inserting
+
+        await Program.insertMany(programToInsert);
+        console.log('Imported program data successfully.');
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error importing people data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import people data.' });
+    }
+}));
+
+
 module.exports = router;
