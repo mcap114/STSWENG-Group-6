@@ -276,3 +276,54 @@ function exportTableToCSV(filename) {
     }
     downloadCSV(csv.join('\n'), filename);
 }
+
+document.getElementById('csvFileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            parseAndSendCSVData(content);
+        };
+        reader.readAsText(file);
+    }
+});
+
+function parseAndSendCSVData(csvContent) {
+    const lines = csvContent.split('\n');
+    const benefactorData = [];
+
+    // Skip the first line if it contains headers
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+            const fields = line.split(';');
+            const benefactor = {
+                name: fields[0],
+                type: fields[1],
+            };
+            benefactorData.push(benefactor);
+            console.log(benefactorData);
+        }
+    }
+
+    // Send data to the server
+    fetch('/benefactors/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ benefactor: benefactorData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}
