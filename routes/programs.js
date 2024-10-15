@@ -171,8 +171,8 @@ router.post('/import', asyncHandler(async (req, res) => {
         console.log('Imported program data successfully.');
         res.json({ success: true });
     } catch (error) {
-        console.error('Error importing people data:', error);
-        res.status(500).json({ success: false, message: 'Failed to import people data.' });
+        console.error('Error importing program data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import program data.' });
     }
 }));
 

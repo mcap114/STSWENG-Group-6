@@ -366,16 +366,33 @@ function exportTableToCSV(filename) {
     downloadCSV(csv.join('\n'), filename);
 }
 
-document.getElementById('csvFileInput').addEventListener('change', function(event) {
+// Event listener for CSV
+document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
 
     if (file) {
+        const fileType = file.name.split('.').pop().toLowerCase();
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = e.target.result;
-            parseAndSendCSVData(content);
-        };
-        reader.readAsText(file);
+        
+        if (fileType === 'csv') {
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseAndSendCSVData(content);
+            };
+            reader.readAsText(file);
+        } else if (fileType === 'xlsx') {
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                parseAndSendXLSXData(json);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('Invalid file type. Please upload a CSV or XLSX file.');
+        }
     }
 });
 
@@ -402,7 +419,49 @@ function parseAndSendCSVData(csvContent) {
                 recent_pwd_id_update_date: fields[10]
             };
             peopleData.push(person);
-            console.log(peopleData);
+        }
+    }
+
+    // Send data to the server
+    fetch('/people/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ people: peopleData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}
+
+function parseAndSendXLSXData(xlsxData) {
+    const peopleData = [];
+
+    for (let i = 1; i < xlsxData.length; i++) {
+        const row = xlsxData[i];
+        if (row && row.length >= 11) {
+            const person = {
+                first_name: row[0],
+                last_name: row[1],
+                gender: row[2],
+                birthdate: row[3],
+                address: row[4],
+                barangay: row[5],
+                contact_number: row[6],
+                disability_type: row[7],
+                disability: row[8],
+                pwd_card_id_no: row[9],
+                recent_pwd_id_update_date: row[10]
+            };
+            peopleData.push(person);
         }
     }
 

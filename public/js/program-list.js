@@ -311,16 +311,32 @@ function exportTableToCSV(filename) {
     downloadCSV(csv.join('\n'), filename);
 }
 
-document.getElementById('csvFileInput').addEventListener('change', function(event) {
+document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
 
     if (file) {
+        const fileType = file.name.split('.').pop().toLowerCase();
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = e.target.result;
-            parseAndSendCSVData(content);
-        };
-        reader.readAsText(file);
+
+        if (fileType === 'csv') {
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseAndSendCSVData(content);
+            };
+            reader.readAsText(file);
+        } else if (fileType === 'xlsx') {
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });  // Get data as a 2D array
+                parseAndSendXLSXData(json);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('Invalid file type. Please upload a CSV or XLSX file.');
+        }
     }
 });
 
@@ -328,7 +344,6 @@ function parseAndSendCSVData(csvContent) {
     const lines = csvContent.split('\n');
     const programData = [];
 
-    // Skip the first line if it contains headers
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
@@ -339,14 +354,50 @@ function parseAndSendCSVData(csvContent) {
                 creation_date: fields[2],
                 program_type: fields[3],
                 frequency: fields[4],
-                assistance_type: fields[5],
+                assistance_type: fields[5]
             };
-            programData.push(program);
-            console.log(programData);
+           programData.push(program);
         }
     }
 
-    // Send data to the server
+    fetch('/programs/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ program: programData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}
+
+function parseAndSendXLSXData(xlsxData) {
+    const programData = [];
+
+    // Assuming the first row (index 0) is the header, we start from the second row
+    for (let i = 1; i < xlsxData.length; i++) {
+        const row = xlsxData[i];
+        if (row && row.length >= 6) {  // Ensure the row has at least 2 columns (name and type)
+            const program = {
+                name: row[0],
+                recent_update_date: row[1],
+                creation_date: row[2],
+                program_type: row[3],
+                frequency: row[4],
+                assistance_type: row[5],
+            };
+           programData.push(program);
+        }
+    }
+
     fetch('/programs/import', {
         method: 'POST',
         headers: {
