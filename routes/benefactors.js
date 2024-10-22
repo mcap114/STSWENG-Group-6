@@ -121,26 +121,34 @@ router.post('/delete', asyncHandler(async(req, res) => {
 
 router.post('/import', asyncHandler(async (req, res) => {
     const { benefactor } = req.body;
-    console.log('Received data:', req.body); //for debugging received data
+    console.log('Received data:', req.body); // For debugging received data
 
     if (!benefactor || !Array.isArray(benefactor) || benefactor.length === 0) {
         return res.status(400).json({ success: false, message: 'Invalid CSV data.' });
     }
 
     try {
-        const benefactorToInsert = benefactor.map(benefactor => ({
-            name: benefactor.name,
-            type: benefactor.type     
+        const operations = benefactor.map(b => ({
+            updateOne: {
+                filter: { name: b.name }, // Match only by name
+                update: {
+                    $set: {
+                        type: b.type // Update type
+                    }
+                },
+                upsert: true // Insert new document if no match is found
+            }
         }));
-        console.log('Benefactor to insert:', benefactorToInsert); // Log the data before inserting
 
-        await Benefactor.insertMany(benefactorToInsert);
-        console.log('Imported benefactor data successfully.');
+        await Benefactor.bulkWrite(operations); // Perform bulk upsert
+        console.log('Imported/Updated benefactor data successfully.');
         res.json({ success: true });
     } catch (error) {
-        console.error('Error importing benefactor data:', error);
-        res.status(500).json({ success: false, message: 'Failed to import benefactor data.' });
+        console.error('Error importing/updating benefactor data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import/update benefactor data.' });
     }
 }));
+
+
 
 module.exports = router;
