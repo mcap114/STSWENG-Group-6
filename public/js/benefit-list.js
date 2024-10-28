@@ -327,3 +327,107 @@ function exportTableToCSV(filename) {
     }
     downloadCSV(csv.join('\n'), filename);
 }
+
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const fileType = file.name.split('.').pop().toLowerCase();
+        const reader = new FileReader();
+
+        if (fileType === 'csv') {
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseAndSendCSVData(content);
+            };
+            reader.readAsText(file);
+        } else if (fileType === 'xlsx') {
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });  // Get data as a 2D array
+                parseAndSendXLSXData(json);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('Invalid file type. Please upload a CSV or XLSX file.');
+        }
+    }
+});
+
+function parseAndSendCSVData(csvContent) {
+    const lines = csvContent.split('\n');
+    const benefitData = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+            const fields = line.split(';');
+            const benefit = {
+                name: fields[0],
+                description: fields[1],
+                quantity: fields[2],
+                date_received: fields[3],
+                benefactor: fields[4]
+            };
+           benefitData.push(benefit);
+        }
+    }
+
+    fetch('/benefits/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ benefit: benefitData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}
+
+function parseAndSendXLSXData(xlsxData) {
+    const benefitData = [];
+
+    // Assuming the first row (index 0) is the header, we start from the second row
+    for (let i = 1; i < xlsxData.length; i++) {
+        const row = xlsxData[i];
+        if (row && row.length >= 5) {  // Ensure the row has at least 5 columns 
+            const benefit = {
+                name: row[0],
+                description: row[1],
+                quantity: row[2],
+                date_received: row[3],
+                benefactor: row[4]
+            };
+            benefitData.push(benefit);
+        }
+    }
+
+    fetch('/benefits/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ benefit: benefitData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data imported successfully!');
+            window.location.reload();
+        } else {
+            alert('Import failed. Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error importing data:', error));
+}
