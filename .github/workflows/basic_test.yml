@@ -6,7 +6,7 @@ name: Node.js CI
 # Runs the jobs whenever any events set below happen
 on:
   push: # These are the default conditions given by github in this template, placeholder for now while we figure out working branches
-    branches: [ "main", "develop", "feature/*", "release/*", "hotfix/*" ]
+    branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main", "develop" ] 
 
