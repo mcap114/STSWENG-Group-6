@@ -119,4 +119,36 @@ router.post('/delete', asyncHandler(async(req, res) => {
     }
 }));
 
+router.post('/import', asyncHandler(async (req, res) => {
+    const { benefactor } = req.body;
+    console.log('Received data:', req.body); // For debugging received data
+
+    if (!benefactor || !Array.isArray(benefactor) || benefactor.length === 0) {
+        return res.status(400).json({ success: false, message: 'Invalid CSV data.' });
+    }
+
+    try {
+        const operations = benefactor.map(b => ({
+            updateOne: {
+                filter: { name: b.name }, // Match only by name
+                update: {
+                    $set: {
+                        type: b.type // Update type
+                    }
+                },
+                upsert: true // Insert new document if no match is found
+            }
+        }));
+
+        await Benefactor.bulkWrite(operations); // Perform bulk upsert
+        console.log('Imported/Updated benefactor data successfully.');
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error importing/updating benefactor data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import/update benefactor data.' });
+    }
+}));
+
+
+
 module.exports = router;
