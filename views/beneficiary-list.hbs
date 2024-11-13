@@ -67,6 +67,8 @@
             <h2 class="main-title">Beneficiaries for <a href="/documentation/{{program._id}}">{{program.name}}</a></h2>
 
             <div class="button-group">
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+                <button class="btn import-btn" onclick="document.getElementById('csvFileInput').click();">Import CSV</button>
                 <button class="btn export-btn" onclick="exportTableToCSV('Beneficiaries.csv')">Export to CSV</button>
             </div>
 

@@ -163,4 +163,48 @@ router.post('/delete', asyncHandler(async(req, res, next) => {
     }
 }));
 
+//POST for importing a csv file
+router.post('/import', asyncHandler(async (req, res) => {
+    const { benefit } = req.body;
+    console.log('Received data:', req.body); // For debugging received data
+
+    if (!benefit || !Array.isArray(benefit) || benefit.length === 0) {
+        return res.status(400).json({ success: false, message: 'Invalid data.' });
+    }
+
+    try {
+        const operations = await Promise.all(benefit.map(async (benefit) => {
+            const benefactorDoc = await Benefactor.findOne({ name: benefit.benefactor }); // Look up the benefactor
+            if (!benefactorDoc) {
+                throw new Error(`Benefactor not found for name: ${benefit.benefactor}`);
+            }
+
+            return {
+                updateOne: {
+                    filter: { name: benefit.name }, // Match only by benefit name
+                    update: {
+                        $set: {
+                            description: benefit.description,
+                            quantity: Number(benefit.quantity), // Ensure this is a number
+                            date_received: new Date(benefit.date_received), // Ensure this is a date
+                            benefactor: benefactorDoc._id, // Use the ObjectId from the benefactor document
+                        },
+                    },
+                    upsert: true // Insert new document if no match is found
+                }
+            };
+        }));
+
+        // Perform bulk write operation
+        await Benefit.bulkWrite(operations);
+        console.log('Imported/Updated benefit data successfully.');
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error importing/updating benefit data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import/update benefit data: ' + error.message });
+    }
+}));
+
+
+
 module.exports = router;

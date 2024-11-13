@@ -5,6 +5,10 @@ const json = require("json");
 const Person = require("../models/person");
 const Program = require("../models/program");
 const Beneficiary = require("../models/beneficiary");
+const fileUpload = require("express-fileupload");
+const csv = require("csv-parser");
+
+
 
 // Session Authenticator
 function requireAuth(req, res, next) {
@@ -211,5 +215,50 @@ router.post('/delete', asyncHandler(async(req, res) => {
         res.sendStatus(200);
     }
 }));
+
+
+// Enable file upload
+router.use(fileUpload());
+
+router.post('/import', asyncHandler(async (req, res) => {
+    const { people } = req.body;
+    console.log('Received data:', req.body); // For debugging received data
+
+    if (!people || !Array.isArray(people) || people.length === 0) {
+        return res.status(400).json({ success: false, message: 'Invalid CSV data.' });
+    }
+
+    try {
+        const operations = people.map(person => ({
+            updateOne: {
+                filter: { first_name: person.first_name, last_name: person.last_name },  // Matching criteria (first and last name)
+                update: {
+                    $set: {
+                        gender: person.gender,
+                        birthdate: new Date(person.birthdate),
+                        address: person.address,
+                        barangay: person.barangay,
+                        contact_number: person.contact_number,
+                        disability_type: person.disability_type,
+                        disability: person.disability,
+                        pwd_card_id_no: person.pwd_card_id_no,
+                        recent_pwd_id_update_date: new Date(person.recent_pwd_id_update_date)
+                    }
+                },
+                upsert: true // Insert new document if no match is found
+            }
+        }));
+
+        await Person.bulkWrite(operations); // Perform bulk upsert
+        console.log('Imported/Updated people data successfully.');
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error importing/updating people data:', error);
+        res.status(500).json({ success: false, message: 'Failed to import/update people data.' });
+    }
+}));
+
+
+
 
 module.exports = router;
