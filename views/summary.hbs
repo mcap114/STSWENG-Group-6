@@ -47,7 +47,7 @@
             <header class="bg-gradient">
                 <div class="container d-flex align-items-center">
                     <div class="menu-icon mr-3" id="menu-toggle">&#9776;</div>
-                    <a href="/dashboard">
+                    <a href="/">
                         <img src="../images/LPPWDFI-Logo.png" alt="Logo" class="logo mr-3">
                     </a>
                     <div>
@@ -103,6 +103,40 @@
                     </div>
                 </div>
 
+                <!-- List of Programs -->
+                <h2 class="text-left mb-2" style="position: relative; top:35px;">List of Programs</h2>
+                <div class="row text-center">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Program Name</th>
+                                    <th>Program Type</th>
+                                    <th>Program Frequency</th>
+                                    <th>Assistance Type</th>
+                                    <th>Beneficiaries Involved</th>
+                                    <th>Benefits Items Involved</th>
+                                    <th>Personnel Involved</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each programs}}
+                                <tr>
+                                    <td>{{this.name}}</td>
+                                    <td>{{this.program_type}}</td>
+                                    <td>{{this.frequency}}</td>
+                                    <td>{{this.assistance_type}}</td>
+                                    <td>{{this.beneficiary_count}}</td>
+                                    <td>{{this.benefit_count}}</td>
+                                    <td>{{this.people_count}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Programs Breakdown -->
                 <h2 class="text-left mb-2" style="position: relative; top:15px;">Program Breakdown</h2>
                 <div class="row text-center">
                     <div class="col-md-6 mb-3">
@@ -180,37 +214,82 @@
                     </div>
                 </div>
 
-                <h2 class="text-left mb-2" style="position: relative; top:35px;">List of Programs</h2>
+                <!-- People Breakdown -->
+                <h2 class="text-left mb-2" style="position: relative; top:15px;">People Breakdown</h2>
                 <div class="row text-center">
-                    <div class="table-responsive mt-3">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Program Name</th>
-                                    <th>Program Type</th>
-                                    <th>Program Frequency</th>
-                                    <th>Assistance Type</th>
-                                    <th>Beneficiaries Involved</th>
-                                    <th>Benefits Items Involved</th>
-                                    <th>Personnel Involved</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each programs}}
-                                <tr>
-                                    <td>{{this.name}}</td>
-                                    <td>{{this.program_type}}</td>
-                                    <td>{{this.frequency}}</td>
-                                    <td>{{this.assistance_type}}</td>
-                                    <td>{{this.beneficiary_count}}</td>
-                                    <td>{{this.benefit_count}}</td>
-                                    <td>{{this.people_count}}</td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-light" style="position: relative; top:20px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-left">People by Disability Type</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Physical
+                                        <span>{{peopleCountByDisabilityType.physical}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Sensory
+                                        <span>{{peopleCountByDisabilityType.sensory}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Intellectual
+                                        <span>{{peopleCountByDisabilityType.intellectual}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Mental
+                                        <span>{{peopleCountByDisabilityType.mental}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-light" style="position: relative; top:20px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-left">People by Gender</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Male
+                                        <span>{{peopleCountByGender.male}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Female
+                                        <span>{{peopleCountByGender.female}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Benefactors Breakdown -->
+                <h2 class="text-left mb-2" style="position: relative; top:15px;">Benefactors Breakdown</h2>
+                <div class="row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-light" style="position: relative; top:20px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-left">Benefactors by Type</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Individual
+                                        <span>{{benefactorCountByType.individual}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Government
+                                        <span>{{benefactorCountByType.government}}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Organization
+                                        <span>{{benefactorCountByType.organization}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
             </div>
         </div>
     </div>
@@ -242,7 +321,19 @@
                 ["Program Name", "Program Type", "Program Frequency", "Assistance Type", "Beneficiaries Involved", "Benefits Items Involved", "Personnel Involved"],
                 {{#each programs}}
                 ["{{this.name}}", "{{this.program_type}}", "{{this.frequency}}", "{{this.assistance_type}}", "{{this.beneficiary_count}}", "{{this.benefit_count}}", "{{this.people_count}}"],
-                {{/each}}
+                {{/each}},
+                ["People by Disability Type"],
+                ["Physical", {{peopleCountByDisabilityType.physical}}],
+                ["Sensory", {{peopleCountByDisabilityType.sensor}}],
+                ["Intellectual", {{peopleCountByDisabilityType.intellectual}}],
+                ["Mental", {{peopleCountByDisabilityType.mental}}],
+                ["People by Gender"],
+                ["Male", {{peopleCountByGender.male}}],
+                ["Female", {{peopleCountByGender.female}}],
+                ["Benefactors by Type"],
+                ["Individual", {{benefactorCountByType.individual}}],
+                ["Government", {{benefactorCountByType.government}}],
+                ["Organization", {{benefactorCountByType.organization}}]
             ];
 
             // Convert to CSV

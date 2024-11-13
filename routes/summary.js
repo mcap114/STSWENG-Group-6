@@ -59,93 +59,86 @@ router.get('/', asyncHandler(async(req, res) => {
         medical: await Program.find({ assistance_type: "Medical" }).count()
     };
 
-    const programs = await Program.find()
-        .sort({ name: 1 })
-        .lean()
-        .exec();
+    const programs = await Program.find().sort({ name: 1 }).lean().exec();
 
-    for (const program of programs) {
-        const beneficiary_counts = await Beneficiary.aggregate([{
-                $match: {
-                    program_enrolled: program._id,
+    // People count by gender
+    const peopleCountByGender = {
+        male: await Person.find({ gender: "Male" }).count(),
+        female: await Person.find({ gender: "Female" }).count(),
+        other: await Person.find({ gender: "Other" }).count(),
+    };
+
+    // People countby disability type
+    const peopleCountByDisabilityType = {
+        physical: await Person.find({ disability_type: "Physical" }).count(),
+        sensory: await Person.find({ disability_type: "Sensory" }).count(),
+        intellectual: await Person.find({ disability_type: "Intellectual" }).count(),
+        mental: await Person.find({ disability_type: "Mental" }).count(),
+    };
+
+    const people = await Person.find().sort({ last_name: 1, first_name: 1 }).lean().exec();
+
+    // Benefactors count by type
+    const benefactorCountByType = {
+        individual: await Benefactor.find({ type: "Individual" }).count(),
+        government: await Benefactor.find({ type: "Government" }).count(),
+        organization: await Benefactor.find({ type: "Organization" }).count(),
+    };
+
+    const benefactors = await Benefactor.find().sort({ name: 1 }).lean().exec();
+
+        for (const program of programs) {
+            const beneficiary_counts = await Beneficiary.aggregate([
+                { $match: { program_enrolled: program._id } },
+                { $count: "beneficiary_count" }
+            ]);
+        
+            const benefit_counts = await Beneficiary.aggregate([
+                { $match: { program_enrolled: program._id } },
+                { $group: { _id: "$benefit_delivered" } },
+                { $count: "benefit_count" }
+            ]);
+        
+            const people_counts = await Beneficiary.aggregate([
+                { $match: { program_enrolled: program._id } },
+                { $group: { _id: "$person_registered" } },
+                { $count: "people_count" }
+            ]);
+        
+            const benefactor_counts = await Beneficiary.aggregate([
+                { $match: { program_enrolled: program._id } },
+                {
+                    $lookup: {
+                        from: "benefits",
+                        localField: "benefit_delivered",
+                        foreignField: "_id",
+                        as: "benefit",
+                    },
                 },
-            },
-            {
-                $count: "beneficiary_count"
-            }
-        ]);
-
-        const benefit_counts = await Beneficiary.aggregate([{
-                $match: {
-                    program_enrolled: program._id,
-                },
-            },
-            {
-                $group: {
-                    _id: "$benefit_delivered"
-                }
-            },
-            {
-                $count: "benefit_count"
-            }
-        ]);
-
-        const people_counts = await Beneficiary.aggregate([{
-                $match: {
-                    program_enrolled: program._id,
-                },
-            },
-            {
-                $group: {
-                    _id: "$person_registered"
-                }
-            },
-            {
-                $count: "people_count"
-            }
-        ]);
-
-        const benefactor_counts = await Beneficiary.aggregate([{
-                $match: {
-                    program_enrolled: program._id,
-                }
-            },
-            {
-                $lookup: {
-                    from: "benefits",
-                    localField: "benefit_delivered",
-                    foreignField: "_id",
-                    as: "benefit",
-                },
-            },
-            {
-                $unwind: "$benefit",
-            },
-            {
-                $group: {
-                    _id: "$benefit.benefactor",
-                }
-            },
-            {
-                $count: "benefactor_count"
-            }
-        ]);
-
-        program.beneficiary_count = beneficiary_counts[0].beneficiary_count;
-        program.benefit_count = benefit_counts[0].benefit_count;
-        program.people_count = people_counts[0].people_count;
-        program.benefactor_count = benefactor_counts[0].benefactor_count;
-
-        console.log(programs);
-
+                { $unwind: "$benefit" },
+                { $group: { _id: "$benefit.benefactor" } },
+                { $count: "benefactor_count" }
+            ]);
+        
+            program.beneficiary_count = beneficiary_counts.length > 0 ? beneficiary_counts[0].beneficiary_count : 0;
+            program.benefit_count = benefit_counts.length > 0 ? benefit_counts[0].benefit_count : 0;
+            program.people_count = people_counts.length > 0 ? people_counts[0].people_count : 0;
+            program.benefactor_count = benefactor_counts.length > 0 ? benefactor_counts[0].benefactor_count : 0;
+        }
+        
         res.render("summary", {
             totalCounts,
             programCountsByType,
             programCountByFrequency,
             programCountByAssistance,
-            programs
+            programs,
+            peopleCountByGender, 
+            peopleCountByDisabilityType, 
+            benefactorCountByType,
+            people, 
+            benefactors 
         });
-    }
+        
 }));
 
 module.exports = router;
