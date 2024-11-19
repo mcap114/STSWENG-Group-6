@@ -531,25 +531,30 @@ hr.vertical-solid {
 }
 
 #resetFiltersButton {
-    background-color: #f8f9fa;
+    background-color: var(--color1); /* Match search bar background */
+    color: #495057; /* Adjust to match your theme */
     border: 1px solid #ced4da;
-    color: #495057;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 5px 20px; /* Padding adjusted for sleek look */
+    border-radius: 20px; 
+    margin-bottom: 25px;
+    font-size: 16px;
+    font-family: 'Garet', sans-serif; 
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    margin-bottom: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); 
 }
 
 #resetFiltersButton:hover {
-    background-color: #e2e6ea;
-    color: #212529;
+    background-color: #e2e6ea; 
+    color: #212529; 
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15); 
 }
 
 #resetFiltersButton:focus {
     outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(100, 164, 162, 0.25);
 }
 
 
@@ -699,4 +704,57 @@ hr.vertical-solid {
 
 .popup .submitPeopleBtn:hover {
     background: darkorange;
+}
+
+.search-bar-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 25px;
+}
+
+.search-bar {
+    width: 100%;
+    max-width: 700px;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    font-family: 'Garet', sans-serif;
+    font-size: 14px;
+    color: #495057;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background-color: var(--color1);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar::placeholder {
+    color: #adb5bd;
+}
+
+.search-bar:focus {
+    border-color: var(--color4);
+    box-shadow: 0px 1px 5px rgba(100, 164, 162, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #adb5bd; 
+    pointer-events: none; 
+}
+
+.search-btn:hover {
+    color: var(--color4);
+}
+
+.search-reset-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Space between search bar and button */
+    max-width: 800px;
+    margin-bottom: 25px;
 }

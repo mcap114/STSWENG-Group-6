@@ -416,3 +416,24 @@ function parseAndSendXLSXData(xlsxData) {
     })
     .catch(error => console.error('Error importing data:', error));
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+    
+        rows.forEach(row => {
+            const programName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            if (programName.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+        addEventListeners();
+    }
+);
+

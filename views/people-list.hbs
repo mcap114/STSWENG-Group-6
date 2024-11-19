@@ -7,6 +7,7 @@
     <title>LPPWDFI | People Lists</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/List-style.css">
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
@@ -75,202 +76,218 @@
                 <button class="btn export-btn" onclick="exportTableToCSV('People.csv')">Export to CSV</button>
             </div>
 
+            <div class="search-bar-container mb-3">
+                <form id="search-form" onsubmit="handleSearch(event)">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search By First or Last Name..." aria-label="Search People">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+
+
             <!---TABLE LISTS-->
             <div class="table-container">
                 <form id="filter-form">
-                <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
-                <table class="table table-bordered table-hover" style="font-size: 0.70rem;">
-                    <caption>List of People</caption>
-                    <thead class="thead-light">
-                         <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="firstNameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                            First Name
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="firstNameDropdown">
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="firstNameSort" value="az" id="firstNameSortAZ">
-                                                    <label class="form-check-label" for="firstNameSortAZ">
-                                                        A-Z
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="firstNameSort" value="za" id="firstNameSortZA">
-                                                    <label class="form-check-label" for="firstNameSortZA">
-                                                        Z-A
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="lastNameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Last Name
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="lastNameDropdown">
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="lastNameSort" value="az" id="lastNameSortAZ">
-                                                    <label class="form-check-label" for="lastNameSortAZ">
-                                                        A-Z
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="lastNameSort" value="za" id="lastNameSortZA">
-                                                    <label class="form-check-label" for="lastNameSortZA">
-                                                        Z-A
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="genderDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Gender
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="genderDropdown">
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" value="Male" id="maleCheck" name="genderFilter">
-                                                    <label class="form-check-label" for="maleCheck">
-                                                        Male
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" value="Female" id="femaleCheck" name="genderFilter">
-                                                    <label class="form-check-label" for="femaleCheck">
-                                                        Female
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="birthdateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Birthdate
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="birthdateDropdown">
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="birthdateSort" value="newest" id="birthdateSortNewest">
-                                                    <label class="form-check-label" for="birthdateSortNewest">
-                                                        Youngest
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="birthdateSort" value="oldest" id="birthdateSortOldest">
-                                                    <label class="form-check-label" for="birthdateSortOldest">
-                                                        Oldest
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">Address</th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="barangayDropdown" data-bs-toggle="dropdown" aria-expanded="false">Barangay</a>
-                                        <ul class="dropdown-menu" aria-labelledby="barangayDropdown">
-                                            {{#each barangayCodes}}
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="{{this}}" id="{{this}}Check" name="barangayFilter">
-                                                    <label class="form-check-label" for="{{this}}Check">{{this}}</label>
-                                                </div>
-                                            </li>
-                                            {{/each}}
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">Contact Number</th>
-                                <th scope="col">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="disabilityTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Disability Type
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="disabilityTypeDropdown">
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="Physical" id="physicalCheck" name="disabilityTypeFilter">
-                                                    <label class="form-check-label" for="physicalCheck">
-                                                        Physical
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="Sensory" id="sensoryCheck" name="disabilityTypeFilter">
-                                                    <label class="form-check-label" for="sensoryCheck">
-                                                        Sensory
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="Intellectual" id="intellectualCheck" name="disabilityTypeFilter">
-                                                    <label class="form-check-label" for="intellectualCheck">
-                                                        Intellectual
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="Mental" id="mentalCheck" name="disabilityTypeFilter">
-                                                    <label class="form-check-label" for="mentalCheck">
-                                                        Mental
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </th>
-                                <th scope="col">Disability</th>
-                                <th scope="col">PWD Card ID No.</th>
-                                <th scope="col">Recent PWD ID Date</th>
-                                <th scope="col">Actions</th>
+                    <div class="search-reset-container">
+                        <div class="search-bar-container">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="searchInput" class="search-bar" placeholder="Search...">
+                        </div>
+                        
+                        <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
+                    </div>
+                    <table class="table table-bordered table-hover" style="font-size: 0.70rem;">
+                        <caption>List of People</caption>
+                        <thead class="thead-light">
+                            <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="firstNameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                First Name
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="firstNameDropdown">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="firstNameSort" value="az" id="firstNameSortAZ">
+                                                        <label class="form-check-label" for="firstNameSortAZ">
+                                                            A-Z
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="firstNameSort" value="za" id="firstNameSortZA">
+                                                        <label class="form-check-label" for="firstNameSortZA">
+                                                            Z-A
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="lastNameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Last Name
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="lastNameDropdown">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="lastNameSort" value="az" id="lastNameSortAZ">
+                                                        <label class="form-check-label" for="lastNameSortAZ">
+                                                            A-Z
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="lastNameSort" value="za" id="lastNameSortZA">
+                                                        <label class="form-check-label" for="lastNameSortZA">
+                                                            Z-A
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="genderDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Gender
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="genderDropdown">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" value="Male" id="maleCheck" name="genderFilter">
+                                                        <label class="form-check-label" for="maleCheck">
+                                                            Male
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" value="Female" id="femaleCheck" name="genderFilter">
+                                                        <label class="form-check-label" for="femaleCheck">
+                                                            Female
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="birthdateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Birthdate
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="birthdateDropdown">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="birthdateSort" value="newest" id="birthdateSortNewest">
+                                                        <label class="form-check-label" for="birthdateSortNewest">
+                                                            Youngest
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="birthdateSort" value="oldest" id="birthdateSortOldest">
+                                                        <label class="form-check-label" for="birthdateSortOldest">
+                                                            Oldest
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="barangayDropdown" data-bs-toggle="dropdown" aria-expanded="false">Barangay</a>
+                                            <ul class="dropdown-menu" aria-labelledby="barangayDropdown">
+                                                {{#each barangayCodes}}
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="{{this}}" id="{{this}}Check" name="barangayFilter">
+                                                        <label class="form-check-label" for="{{this}}Check">{{this}}</label>
+                                                    </div>
+                                                </li>
+                                                {{/each}}
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">Contact Number</th>
+                                    <th scope="col">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" id="disabilityTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Disability Type
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="disabilityTypeDropdown">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="Physical" id="physicalCheck" name="disabilityTypeFilter">
+                                                        <label class="form-check-label" for="physicalCheck">
+                                                            Physical
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="Sensory" id="sensoryCheck" name="disabilityTypeFilter">
+                                                        <label class="form-check-label" for="sensoryCheck">
+                                                            Sensory
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="Intellectual" id="intellectualCheck" name="disabilityTypeFilter">
+                                                        <label class="form-check-label" for="intellectualCheck">
+                                                            Intellectual
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="Mental" id="mentalCheck" name="disabilityTypeFilter">
+                                                        <label class="form-check-label" for="mentalCheck">
+                                                            Mental
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th>
+                                    <th scope="col">Disability</th>
+                                    <th scope="col">PWD Card ID No.</th>
+                                    <th scope="col">Recent PWD ID Date</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                        <tbody>
+                            <!-- Table rows go here -->
+                            {{#each people}}
+                            <tr data-person-id="{{this.id}}">
+                                <td class="people-index">{{incremented @index}}</td>
+                                <td>{{this.first_name}}</td>
+                                <td>{{this.last_name}}</td>
+                                <td>{{this.gender}}</td>
+                                <td>{{formatDate this.birthdate}}</td>
+                                <td>{{this.address}}</td>
+                                <td>{{this.barangay}}</td>
+                                <td>{{this.contact_number}}</td>
+                                <td>{{this.disability_type}}</td>
+                                <td>{{this.disability}}</td>
+                                <td>{{this.pwd_card_id_no}}</td>
+                                <td>{{formatDate this.recent_pwd_id_update_date}}</td>
+                                <td>
+                                    <button class="editBtn" data-bs-toggle="modal" data-bs-target="#modal-people-edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="deleteBtn" data-id="{{this._id}}"><i class="bi bi-trash"></i></button>
+                                </td>
                             </tr>
-                    <tbody>
-                        <!-- Table rows go here -->
-                        {{#each people}}
-                        <tr data-person-id="{{this.id}}">
-                            <td class="people-index">{{incremented @index}}</td>
-                            <td>{{this.first_name}}</td>
-                            <td>{{this.last_name}}</td>
-                            <td>{{this.gender}}</td>
-                            <td>{{formatDate this.birthdate}}</td>
-                            <td>{{this.address}}</td>
-                            <td>{{this.barangay}}</td>
-                            <td>{{this.contact_number}}</td>
-                            <td>{{this.disability_type}}</td>
-                            <td>{{this.disability}}</td>
-                            <td>{{this.pwd_card_id_no}}</td>
-                            <td>{{formatDate this.recent_pwd_id_update_date}}</td>
-                            <td>
-                                <button class="editBtn" data-bs-toggle="modal" data-bs-target="#modal-people-edit"><i class="bi bi-pencil"></i></button>
-                                <button class="deleteBtn" data-id="{{this._id}}"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
+                            {{/each}}
+                        </tbody>
+                    </table>
                 </form>
             </div>
         
