@@ -431,3 +431,28 @@ function parseAndSendXLSXData(xlsxData) {
     })
     .catch(error => console.error('Error importing data:', error));
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody.programInfo tr');
+
+        rows.forEach(row => {
+            const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const description = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const benefactorName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+
+            const searchText = `${name} ${description} ${benefactorName}`;
+
+            if (searchText.includes(filter)) {
+                row.style.display = ''; 
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+    });
+
+    addEventListeners(); 
+});
+
+

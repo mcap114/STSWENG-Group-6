@@ -484,3 +484,27 @@ function parseAndSendXLSXData(xlsxData) {
     })
     .catch(error => console.error('Error importing data:', error));
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const firstName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const lastName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const fullName = `${firstName} ${lastName}`;
+
+            if (fullName.includes(filter)) {
+                row.style.display = ''; 
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+    });
+
+    addEventListeners();
+});
+
+
+
