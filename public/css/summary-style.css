@@ -57,14 +57,17 @@ html {
 }
 
 .bg-container {
-    background-color: #eeeeee;
-    padding: 10px;
-    border-radius: 8px;
+    background: #eeeeee;
+    padding: 20px;
+    padding-bottom: 50px;
+    border-radius: 16px;
     width: 100%;
-    max-width: 1350px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1500px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     position: relative;
     top: 80px;
+    margin: 0 auto 80px auto;
+    color: #333;
 }
 
 
