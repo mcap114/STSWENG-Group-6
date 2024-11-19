@@ -77,6 +77,14 @@
                 <button class="btn export-btn" onclick="exportTableToCSV('Benefit.csv')">Export to CSV</button>
             </div>
 
+             <div class="search-bar-container mb-3">
+                <form id="search-form" onsubmit="handleSearch(event)">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search Name, Description, or Benefactor Name..." aria-label="Search People">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+
             <!---TABLE LISTS-->
             <div class="table-container">
                 <form id="filter-form">
