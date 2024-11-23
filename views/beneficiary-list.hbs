@@ -90,12 +90,14 @@
                         </div>
                         
                         <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
+                        <button id="delete-selected-btn" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
                     </div>
  
                     <table class="table table-bordered table-hover">
                         <caption>List of Beneficiaries</caption>
                         <thead class="thead-light">
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">#</th>
                                 <th scope="col">
                                     <div class="dropdown">
@@ -169,6 +171,9 @@
                             <!-- Program rows will be populated here -->
                             {{#each beneficiaries}}
                             <tr data-beneficiary-id="{{this._id}}">
+                                <td>
+                                    <input type="checkbox" class="select-checkbox" onchange="toggleRowHighlight(this)">
+                                </td>
                                 <td class="beneficiary-index">{{incremented @index}}</th>
                                 <td class="beneficiary-name">{{this.person_registered.name}}</td>
                                 <td class="program-enrolled">{{this.program_enrolled.name}}</td>

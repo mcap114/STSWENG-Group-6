@@ -418,6 +418,7 @@ function parseAndSendXLSXData(xlsxData) {
 }
 
 
+
 document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('searchInput').addEventListener('input', function () {
@@ -436,4 +437,35 @@ document.addEventListener('DOMContentLoaded', function() {
         addEventListeners();
     }
 );
+
+document.addEventListener("DOMContentLoaded", function () {
+    function toggleRowHighlight(checkbox) {
+        console.log('Checkbox toggled:', checkbox.checked); // Log checkbox state
+        const row = checkbox.closest('tr'); // Select the parent row
+        console.log('Parent row:', row); // Log the row being affected
+
+        const actionContainer = document.getElementById('action-container');
+        const checkboxes = document.querySelectorAll('.select-checkbox');
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked); // Check if any box is selected
+
+        if (checkbox.checked) {
+            row.classList.add('highlighted-row'); // Highlight the row
+        } else {
+            row.classList.remove('highlighted-row'); // Remove the highlight
+        }
+
+        actionContainer.style.display = anyChecked ? 'block' : 'none'; // Toggle button visibility
+    }
+
+    // Attach this function to each checkbox
+    document.querySelectorAll('.select-checkbox').forEach((checkbox) => {
+        checkbox.addEventListener('change', function () {
+            toggleRowHighlight(this);
+        });
+    });
+});
+
+
+
+
 

@@ -86,12 +86,14 @@
                         </div>
                         
                         <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
+                        <button id="delete-selected-btn" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
                     </div>
             
                     <table class="table table-bordered table-hover">
                         <caption>List of Benefactors</caption>
                         <thead class="thead-light">
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">#</th>
                                 <!-- Column for benefactor name with sorting options -->
                                 <th scope="col">
@@ -144,6 +146,9 @@
                         <tbody>
                             {{#each benefactors}}
                             <tr data-benefactor-id="{{this.id}}">
+                                <td>
+                                    <input type="checkbox" class="select-checkbox" onchange="toggleRowHighlight(this)">
+                                </td>
                                 <td class="benefactor-index">{{incremented @index}}</td>
                                 <!-- Benefactor data -->
                                 <td class="benefactor-name">{{this.name}}</td>
