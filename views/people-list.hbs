@@ -76,23 +76,17 @@
                 <button class="btn export-btn" onclick="exportTableToCSV('People.csv')">Export to CSV</button>
             </div>
 
-            <div class="search-bar-container mb-3">
-                <form id="search-form" onsubmit="handleSearch(event)">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search By First or Last Name..." aria-label="Search People">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
-
-
 
             <!---TABLE LISTS-->
             <div class="table-container">
                 <form id="filter-form">
                     <div class="search-reset-container">
-                        <div class="search-bar-container">
-                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                            <input type="text" id="searchInput" class="search-bar" placeholder="Search...">
-                        </div>
+                            <div class="search-bar-container">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <form id="search-form" onsubmit="handleSearch(event)">
+                                    <input type="text" id="searchInput" class="search-bar" placeholder="Search By First or Last Name..." aria-label="Search People">
+                                </form>
+                            </div>
                         
                         <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
                     </div>
