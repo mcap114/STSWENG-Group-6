@@ -163,6 +163,22 @@ router.post('/delete', asyncHandler(async(req, res, next) => {
     }
 }));
 
+// POST request for deleting MULTIPLE benefits
+router.post('/delete-multiple', (req, res) => {
+    const { ids } = req.body;
+
+    if (!ids || !ids.length) {
+        return res.status(400).json({ message: 'No IDs provided.' });
+    }
+
+    Benefit.deleteMany({ _id: { $in: ids } })
+        .then(() => res.status(200).json({ message: 'Benefits deleted successfully.' }))
+        .catch(error => {
+            console.error('Error deleting items:', error);
+            res.status(500).json({ message: 'Server error.' });
+        });
+});
+
 //POST for importing a csv file
 router.post('/import', asyncHandler(async (req, res) => {
     const { benefit } = req.body;

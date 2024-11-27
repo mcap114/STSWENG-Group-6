@@ -119,6 +119,22 @@ router.post('/delete', asyncHandler(async(req, res) => {
     }
 }));
 
+// POST request for deleting MULTIPLE benefactors
+router.post('/delete-multiple', (req, res) => {
+    const { ids } = req.body;
+
+    if (!ids || !ids.length) {
+        return res.status(400).json({ message: 'No IDs provided.' });
+    }
+
+    Benefactor.deleteMany({ _id: { $in: ids } })
+        .then(() => res.status(200).json({ message: 'Benefactors deleted successfully.' }))
+        .catch(error => {
+            console.error('Error deleting items:', error);
+            res.status(500).json({ message: 'Server error.' });
+        });
+});
+
 router.post('/import', asyncHandler(async (req, res) => {
     const { benefactor } = req.body;
     console.log('Received data:', req.body); // For debugging received data

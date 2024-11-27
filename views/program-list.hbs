@@ -74,13 +74,6 @@
                 <button class="btn export-btn" onclick="exportTableToCSV('People.csv')">Export to CSV</button>
             </div>
 
-            <div class="search-bar-container mb-3">
-                <form id="search-form" onsubmit="handleSearch(event)">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by Program Name..." aria-label="Search Programs">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
-
 
 
             <!-- Table List -->
@@ -88,16 +81,22 @@
                 <form id="filter-form">
                     <div class="search-reset-container">
                         <div class="search-bar-container">
-                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                            <input type="text" id="searchInput" class="search-bar" placeholder="Search...">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <form id="search-form" onsubmit="handleSearch(event)">
+                                    <input type="text" id="searchInput" class="search-bar" placeholder="Search By Program Name" aria-label="Search Program">
+                                </form>
                         </div>
                         
                         <button id="resetFiltersButton" class="btn btn-secondary">Reset Filters</button>
+                        
+                        <button id="delete-selected-btn" class="btn btn-danger" onclick="deleteSelected()">Delete Selected</button>
+
                     </div>
                     <table class="table table-bordered table-hover">
                         <caption>List of Programs</caption>
                         <thead class="thead-light">
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">#</th>
                                 <th scope="col">
                                     <div class="dropdown">
@@ -214,6 +213,9 @@
                             <!-- Program rows will be populated here -->
                             {{#each programs}}
                             <tr data-id="{{this._id}}">
+                                <td>
+                                    <input type="checkbox" class="select-checkbox" onchange="toggleRowHighlight(this)">
+                                </td>
                                 <td class="program-index">{{incremented @index}}</td>
                                 <td dateReceiveddateReceived><a href="/beneficiaries/{{this._id}}">{{this.name}}</a></td>
                                 <td class="program-lastupdate-date">{{formatDate this.recent_update_date}}</td>

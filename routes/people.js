@@ -216,6 +216,22 @@ router.post('/delete', asyncHandler(async(req, res) => {
     }
 }));
 
+// POST request for deleting MULTIPLE people
+router.post('/delete-multiple', (req, res) => {
+    const { ids } = req.body;
+
+    if (!ids || !ids.length) {
+        return res.status(400).json({ message: 'No IDs provided.' });
+    }
+    
+    Person.deleteMany({ _id: { $in: ids } })
+        .then(() => res.status(200).json({ message: 'People deleted successfully.' }))
+        .catch(error => {
+            console.error('Error deleting items:', error);
+            res.status(500).json({ message: 'Server error.' });
+        });
+});
+
 
 // Enable file upload
 router.use(fileUpload());

@@ -417,6 +417,62 @@ function parseAndSendXLSXData(xlsxData) {
     .catch(error => console.error('Error importing data:', error));
 }
 
+function toggleRowHighlight(checkbox) {
+    const row = checkbox.closest('tr');
+    if (checkbox.checked) {
+        row.classList.add('selected');
+    } else {
+        row.classList.remove('selected');
+    }
+}
+
+function deleteSelected() {
+    // Collect all selected checkboxes
+    const selectedCheckboxes = document.querySelectorAll('.select-checkbox:checked');
+
+    // Collect the IDs of selected rows
+    const idsToDelete = Array.from(selectedCheckboxes).map(checkbox =>
+        checkbox.closest('tr').getAttribute('data-id')
+    );
+
+    if (idsToDelete.length === 0) {
+        alert("No items selected.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm(`Are you sure you want to delete ${idsToDelete.length} item(s)?`)) {
+        return;
+    }
+
+    // Remove selected rows from the DOM
+    selectedCheckboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        row.remove();
+    });
+
+    // Send DELETE request to the server
+    fetch('/programs/delete-multiple', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids: idsToDelete })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Selected programs deleted successfully.');
+            } else {
+                alert('Failed to delete selected programs. Please try again.');
+                console.error('Delete failed:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting items:', error);
+        });
+}
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -425,8 +481,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('tbody tr');
     
         rows.forEach(row => {
-            const programName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            if (programName.includes(filter)) {
+            const programName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+
+            const searchText = `${programName}`;
+
+            if (searchText.includes(filter)) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -436,4 +495,35 @@ document.addEventListener('DOMContentLoaded', function() {
         addEventListeners();
     }
 );
+
+document.addEventListener("DOMContentLoaded", function () {
+    function toggleRowHighlight(checkbox) {
+        console.log('Checkbox toggled:', checkbox.checked); // Log checkbox state
+        const row = checkbox.closest('tr'); // Select the parent row
+        console.log('Parent row:', row); // Log the row being affected
+
+        const actionContainer = document.getElementById('action-container');
+        const checkboxes = document.querySelectorAll('.select-checkbox');
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked); // Check if any box is selected
+
+        if (checkbox.checked) {
+            row.classList.add('highlighted-row'); // Highlight the row
+        } else {
+            row.classList.remove('highlighted-row'); // Remove the highlight
+        }
+
+        actionContainer.style.display = anyChecked ? 'block' : 'none'; // Toggle button visibility
+    }
+
+    // Attach this function to each checkbox
+    document.querySelectorAll('.select-checkbox').forEach((checkbox) => {
+        checkbox.addEventListener('change', function () {
+            toggleRowHighlight(this);
+        });
+    });
+});
+
+
+
+
 
