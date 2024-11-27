@@ -493,9 +493,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const rows = document.querySelectorAll('tbody.programInfo tr');
 
         rows.forEach(row => {
-            const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            const description = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-            const benefactorName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+            const name = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const description = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const benefactorName = row.querySelector('td:nth-child(7)').textContent.toLowerCase();
 
             const searchText = `${name} ${description} ${benefactorName}`;
 

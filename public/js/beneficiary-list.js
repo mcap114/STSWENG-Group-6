@@ -390,3 +390,24 @@ function deleteSelected() {
             console.error('Error deleting items:', error);
         });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const recipient = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const programEnrolled = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const searchText = `${recipient} ${programEnrolled}`;
+
+            if (searchText.includes(filter)) {
+                row.style.display = ''; 
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+    });
+
+    addEventListeners();
+});

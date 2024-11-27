@@ -546,8 +546,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const rows = document.querySelectorAll('tbody tr');
 
         rows.forEach(row => {
-            const firstName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            const lastName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const firstName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const lastName = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
             const fullName = `${firstName} ${lastName}`;
 
             if (fullName.includes(filter)) {

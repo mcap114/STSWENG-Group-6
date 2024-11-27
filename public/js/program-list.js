@@ -481,8 +481,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('tbody tr');
     
         rows.forEach(row => {
-            const programName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            if (programName.includes(filter)) {
+            const programName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+
+            const searchText = `${programName}`;
+
+            if (searchText.includes(filter)) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
