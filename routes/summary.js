@@ -24,121 +24,80 @@ function requireAuth(req, res, next) {
 router.use(requireAuth);
 
 // Get request for summary.
-router.get('/', asyncHandler(async(req, res) => {
-    const totalProgramCount = await Program.find().count();
-    const totalBenefitCount = await Benefit.find().count();
-    const totalBenefactorCount = await Benefactor.find().count();
-
+router.get('/', asyncHandler(async (req, res) => {
     const totalCounts = {
-        programs: await Program.find().count(),
-        benefits: await Benefit.find().count(),
-        people: await Person.find().count(),
-        benefactors: await Benefactor.find().count()
-    }
+        programs: await Program.countDocuments(),
+        benefits: await Benefit.countDocuments(),
+        people: await Person.countDocuments(),
+        benefactors: await Benefactor.countDocuments()
+    };
 
-    //Program count by program type.
+    // Program count by program type
     const programCountsByType = {
-        assistance: await Program.find({ program_type: "Assistance" }).count(),
-        initiative: await Program.find({ program_type: "Initiative" }).count(),
-        service: await Program.find({ program_type: "Service" }).count(),
-        program: await Program.find({ program_type: "Program" }).count()
+        assistance: await Program.countDocuments({ program_type: "Assistance" }),
+        initiative: await Program.countDocuments({ program_type: "Initiative" }),
+        service: await Program.countDocuments({ program_type: "Service" }),
+        program: await Program.countDocuments({ program_type: "Program" })
     };
 
-    //Program count by program frequency.
+    // Program count by program frequency
     const programCountByFrequency = {
-        monthly: await Program.find({ frequency: "Monthly" }).count(),
-        quarterly: await Program.find({ frequency: "Quarterly" }).count(),
-        semi_annual: await Program.find({ frequency: "Semi-Annual" }).count(),
-        yearly: await Program.find({ frequency: "Yearly" }).count()
+        monthly: await Program.countDocuments({ frequency: "Monthly" }),
+        quarterly: await Program.countDocuments({ frequency: "Quarterly" }),
+        semi_annual: await Program.countDocuments({ frequency: "Semi-Annual" }),
+        yearly: await Program.countDocuments({ frequency: "Yearly" })
     };
 
-    //Program count by program assistance type.
+    // Program count by program assistance type
     const programCountByAssistance = {
-        educational: await Program.find({ assistance_type: "Educational" }).count(),
-        financial: await Program.find({ assistance_type: "Financial" }).count(),
-        medical: await Program.find({ assistance_type: "Medical" }).count()
+        educational: await Program.countDocuments({ assistance_type: "Educational" }),
+        financial: await Program.countDocuments({ assistance_type: "Financial" }),
+        medical: await Program.countDocuments({ assistance_type: "Medical" })
     };
 
     const programs = await Program.find().sort({ name: 1 }).lean().exec();
 
     // People count by gender
     const peopleCountByGender = {
-        male: await Person.find({ gender: "Male" }).count(),
-        female: await Person.find({ gender: "Female" }).count(),
-        other: await Person.find({ gender: "Other" }).count(),
+        male: await Person.countDocuments({ gender: "Male" }),
+        female: await Person.countDocuments({ gender: "Female" }),
+        other: await Person.countDocuments({ gender: "Other" })
     };
 
-    // People countby disability type
+    // People count by disability type
     const peopleCountByDisabilityType = {
-        physical: await Person.find({ disability_type: "Physical" }).count(),
-        sensory: await Person.find({ disability_type: "Sensory" }).count(),
-        intellectual: await Person.find({ disability_type: "Intellectual" }).count(),
-        mental: await Person.find({ disability_type: "Mental" }).count(),
+        physical: await Person.countDocuments({ disability_type: "Physical" }),
+        sensory: await Person.countDocuments({ disability_type: "Sensory" }),
+        intellectual: await Person.countDocuments({ disability_type: "Intellectual" }),
+        mental: await Person.countDocuments({ disability_type: "Mental" })
     };
 
     const people = await Person.find().sort({ last_name: 1, first_name: 1 }).lean().exec();
 
     // Benefactors count by type
     const benefactorCountByType = {
-        individual: await Benefactor.find({ type: "Individual" }).count(),
-        government: await Benefactor.find({ type: "Government" }).count(),
-        organization: await Benefactor.find({ type: "Organization" }).count(),
+        individual: await Benefactor.countDocuments({ type: "Individual" }),
+        government: await Benefactor.countDocuments({ type: "Government" }),
+        organization: await Benefactor.countDocuments({ type: "Organization" })
     };
 
     const benefactors = await Benefactor.find().sort({ name: 1 }).lean().exec();
 
-        for (const program of programs) {
-            const beneficiary_counts = await Beneficiary.aggregate([
-                { $match: { program_enrolled: program._id } },
-                { $count: "beneficiary_count" }
-            ]);
-        
-            const benefit_counts = await Beneficiary.aggregate([
-                { $match: { program_enrolled: program._id } },
-                { $group: { _id: "$benefit_delivered" } },
-                { $count: "benefit_count" }
-            ]);
-        
-            const people_counts = await Beneficiary.aggregate([
-                { $match: { program_enrolled: program._id } },
-                { $group: { _id: "$person_registered" } },
-                { $count: "people_count" }
-            ]);
-        
-            const benefactor_counts = await Beneficiary.aggregate([
-                { $match: { program_enrolled: program._id } },
-                {
-                    $lookup: {
-                        from: "benefits",
-                        localField: "benefit_delivered",
-                        foreignField: "_id",
-                        as: "benefit",
-                    },
-                },
-                { $unwind: "$benefit" },
-                { $group: { _id: "$benefit.benefactor" } },
-                { $count: "benefactor_count" }
-            ]);
-        
-            program.beneficiary_count = beneficiary_counts.length > 0 ? beneficiary_counts[0].beneficiary_count : 0;
-            program.benefit_count = benefit_counts.length > 0 ? benefit_counts[0].benefit_count : 0;
-            program.people_count = people_counts.length > 0 ? people_counts[0].people_count : 0;
-            program.benefactor_count = benefactor_counts.length > 0 ? benefactor_counts[0].benefactor_count : 0;
-        }
-        
-        res.render("summary", {
-            totalCounts,
-            programCountsByType,
-            programCountByFrequency,
-            programCountByAssistance,
-            programs,
-            peopleCountByGender, 
-            peopleCountByDisabilityType, 
-            benefactorCountByType,
-            people, 
-            benefactors 
-        });
-        
+    
+    res.render("summary", {
+        totalCounts,
+        programCountsByType,
+        programCountByFrequency,
+        programCountByAssistance,
+        programs,
+        peopleCountByGender,
+        peopleCountByDisabilityType,
+        benefactorCountByType,
+        people,
+        benefactors
+    });
+
 }));
+
 
 module.exports = router;
