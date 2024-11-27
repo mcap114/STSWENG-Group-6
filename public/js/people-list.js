@@ -485,14 +485,69 @@ function parseAndSendXLSXData(xlsxData) {
     .catch(error => console.error('Error importing data:', error));
 }
 
+function toggleRowHighlight(checkbox) {
+    const row = checkbox.closest('tr');
+    if (checkbox.checked) {
+        row.classList.add('selected');
+    } else {
+        row.classList.remove('selected');
+    }
+}
+
+function deleteSelected() {
+    // Collect all selected checkboxes
+    const selectedCheckboxes = document.querySelectorAll('.select-checkbox:checked');
+
+    // Collect the IDs of selected rows
+    const idsToDelete = Array.from(selectedCheckboxes).map(checkbox =>
+        checkbox.closest('tr').getAttribute('data-person-id')
+    );
+
+    if (idsToDelete.length === 0) {
+        alert("No items selected.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm(`Are you sure you want to delete ${idsToDelete.length} item(s)?`)) {
+        return;
+    }
+
+    // Remove selected rows from the DOM
+    selectedCheckboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        row.remove();
+    });
+
+    // Send DELETE request to the server
+    fetch('/people/delete-multiple', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids: idsToDelete })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Selected people deleted successfully.');
+            } else {
+                alert('Failed to delete selected people. Please try again.');
+                console.error('Delete failed:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting items:', error);
+        });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchInput').addEventListener('input', function () {
         const filter = this.value.toLowerCase();
         const rows = document.querySelectorAll('tbody tr');
 
         rows.forEach(row => {
-            const firstName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            const lastName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const firstName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const lastName = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
             const fullName = `${firstName} ${lastName}`;
 
             if (fullName.includes(filter)) {

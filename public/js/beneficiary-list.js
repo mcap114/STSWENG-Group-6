@@ -335,3 +335,79 @@ function exportTableToCSV(filename) {
     }
     downloadCSV(csv.join('\n'), filename);
 }
+
+function toggleRowHighlight(checkbox) {
+    const row = checkbox.closest('tr');
+    if (checkbox.checked) {
+        row.classList.add('selected');
+    } else {
+        row.classList.remove('selected');
+    }
+}
+
+function deleteSelected() {
+    // Collect all selected checkboxes
+    const selectedCheckboxes = document.querySelectorAll('.select-checkbox:checked');
+
+    // Collect the IDs of selected rows
+    const idsToDelete = Array.from(selectedCheckboxes).map(checkbox =>
+        checkbox.closest('tr').getAttribute('data-beneficiary-id')
+    );
+
+    if (idsToDelete.length === 0) {
+        alert("No items selected.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm(`Are you sure you want to delete ${idsToDelete.length} item(s)?`)) {
+        return;
+    }
+
+    // Remove selected rows from the DOM
+    selectedCheckboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        row.remove();
+    });
+
+    // Send DELETE request to the server
+    fetch('/beneficiaries/delete-multiple', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids: idsToDelete })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Selected beneficiaries deleted successfully.');
+            } else {
+                alert('Failed to delete selected beneficiaries. Please try again.');
+                console.error('Delete failed:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting items:', error);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const recipient = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const programEnrolled = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const searchText = `${recipient} ${programEnrolled}`;
+
+            if (searchText.includes(filter)) {
+                row.style.display = ''; 
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+    });
+
+    addEventListeners();
+});
